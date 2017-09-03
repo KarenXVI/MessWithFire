@@ -11,15 +11,56 @@ import Firebase
 
 class MessagesController: UITableViewController {
     
+    var messages = [Message]()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "LogOut", style: .plain, target: self, action: #selector(handleLogout))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(handleNewMessage))
         checkIfUserIsLoggedIn()
+        observeMessages()
+        
     }
+    
+    func observeMessages() {
+        let ref = Database.database().reference().child("messages")
+        ref.observe(.childAdded, with: { (snapshot) in
+            
+            if let dictionary = snapshot.value as? [String: Any] {
+                let messagen = Message()
+                messagen.fromId = dictionary["fromId"] as? String
+                messagen.text = dictionary["text"] as? String
+                messagen.timeStamp = dictionary["timeStamp"] as? NSNumber
+                messagen.toId = dictionary["toId"] as? String
+                self.messages.append(messagen)
+                
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                    
+                }
+            }
+        }, withCancel: nil)
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return messages.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")
+        
+        let message = messages[indexPath.row]
+        cell.textLabel?.text = message.toId
+        cell.detailTextLabel?.text = message.text
+        
+        return cell
+    }
+    
     @objc func handleNewMessage() {
         let newMeassageController = NewMessageController()
+        newMeassageController.messagesController = self
         let navController = UINavigationController(rootViewController: newMeassageController)
         present(navController, animated: true, completion: nil)
     }
@@ -53,22 +94,24 @@ class MessagesController: UITableViewController {
         
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
-        titleView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
         titleView.addSubview(containerView)
+
+        containerView.centerXAnchor.constraint(equalTo: titleView.centerXAnchor).isActive = true
+        containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
         
         let profileImageView = UIImageView()
-        containerView.addSubview(profileImageView)
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.cornerRadius = 20
         profileImageView.clipsToBounds = true
-        profileImageView.translatesAutoresizingMaskIntoConstraints = false
         
         if let profileImageUrl = user.profileImageUrl {
             profileImageView.loadImagesUsingCacheWithUrlString(urlString: profileImageUrl)
         }
+        containerView.addSubview(profileImageView)
         
         profileImageView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
         profileImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
@@ -77,25 +120,23 @@ class MessagesController: UITableViewController {
         
         let nameLabel = UILabel()
         containerView.addSubview(nameLabel)
-
+        
         nameLabel.text = user.name
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         nameLabel.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8).isActive = true
         nameLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor).isActive = true
         nameLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
         nameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor).isActive = true
         
-        containerView.centerXAnchor.constraint(equalTo: titleView.centerXAnchor).isActive = true
-        containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
-        
         self.navigationItem.titleView = titleView
-//        titleView.backgroundColor = .red
-        nameLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
+        
+//        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
+        
     }
     
-    @objc func showChatController() {
-        let chatLogController = ChatLogController()
+    @objc func showChatControllerForUser(user: UserType) {
+        let chatLogController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
+        chatLogController.user = user
         navigationController?.pushViewController(chatLogController, animated: true)
     }
     

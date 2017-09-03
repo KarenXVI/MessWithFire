@@ -31,6 +31,7 @@ class NewMessageController: UITableViewController {
             if let dictionary = snapshot.value as? [String: Any] {
                 let usern = UserType()
 //                usern.setValuesForKeys(dictionary)
+                usern.id = snapshot.key
                 usern.name = dictionary["name"] as? String
                 usern.email = dictionary["email"] as? String
                 usern.profileImageUrl = dictionary["profileImageUrl"] as? String
@@ -64,23 +65,23 @@ class NewMessageController: UITableViewController {
         
         if let profileImageUrl = user.profileImageUrl {
             cell.profileImageView.loadImagesUsingCacheWithUrlString(urlString: profileImageUrl)
-            
-//            let url = URL(string: profileImageUrl)
-//            URLSession.shared.dataTask(with: url!, completionHandler: { (data, response, error) in
-//                if error != nil {
-//                    print(error ?? "download error")
-//                    return
-//                }
-//                DispatchQueue.main.async {
-//                    cell.profileImageView.image = UIImage(data: data!)
-//                }
-//            }).resume()
         }
-        
         return cell
     }
     
+    var messagesController: MessagesController?
+    
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        dismiss(animated: true) {
+            let user = self.users[indexPath.row]
+            self.messagesController?.showChatControllerForUser(user: user)
+            
+        }
+    }
 }
+
+
 
 class UserCell: UITableViewCell {
     

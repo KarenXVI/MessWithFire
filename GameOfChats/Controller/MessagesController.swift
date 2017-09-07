@@ -11,17 +11,19 @@ import Firebase
 
 class MessagesController: UITableViewController {
     
+    let cellId = "cellId"
     var messages = [Message]()
-    
-    
+    var messagesDictionary = [String: Message]()
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "LogOut", style: .plain, target: self, action: #selector(handleLogout))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(handleNewMessage))
+        
+        tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
+        
         checkIfUserIsLoggedIn()
         observeMessages()
-        
     }
     
     func observeMessages() {
@@ -34,11 +36,20 @@ class MessagesController: UITableViewController {
                 messagen.text = dictionary["text"] as? String
                 messagen.timeStamp = dictionary["timeStamp"] as? NSNumber
                 messagen.toId = dictionary["toId"] as? String
-                self.messages.append(messagen)
+//                self.messages.append(messagen)
+                
+                if let toId = messagen.toId {
+                    self.messagesDictionary[toId] = messagen
+                    
+                    self.messages = Array(self.messagesDictionary.values)
+                    
+//                    self.messages.sort(by: { (message1, message2) -> Bool in
+//                        return message1.timeStamp?.intValue > message2.timeStamp?.intValue
+//                    })
+                }
                 
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
-                    
                 }
             }
         }, withCancel: nil)
@@ -47,13 +58,15 @@ class MessagesController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count
     }
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 72
+    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")
         
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
         let message = messages[indexPath.row]
-        cell.textLabel?.text = message.toId
-        cell.detailTextLabel?.text = message.text
+        cell.message = message
         
         return cell
     }
@@ -98,7 +111,6 @@ class MessagesController: UITableViewController {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
         titleView.addSubview(containerView)
-
         containerView.centerXAnchor.constraint(equalTo: titleView.centerXAnchor).isActive = true
         containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
         
@@ -120,7 +132,6 @@ class MessagesController: UITableViewController {
         
         let nameLabel = UILabel()
         containerView.addSubview(nameLabel)
-        
         nameLabel.text = user.name
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8).isActive = true
@@ -129,9 +140,7 @@ class MessagesController: UITableViewController {
         nameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor).isActive = true
         
         self.navigationItem.titleView = titleView
-        
 //        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
-        
     }
     
     @objc func showChatControllerForUser(user: UserType) {
@@ -152,6 +161,5 @@ class MessagesController: UITableViewController {
         loginController.messagesController = self
         present(loginController, animated: true, completion: nil)
     }
-    
 }
 

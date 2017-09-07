@@ -69,7 +69,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
         separatorLineView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
         separatorLineView.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
         separatorLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
     }
     
     @objc func handleSend() {
@@ -78,20 +77,17 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
         let childRef = ref.childByAutoId()
         let toId = user!.id!
         let fromId = Auth.auth().currentUser!.uid
-        let timeStamp = NSDate().timeIntervalSince1970 as NSNumber
+        let timeStamp = Date().timeIntervalSince1970 as NSNumber
         let values = ["text": inputTextField.text!, "toId": toId, "fromId": fromId, "timeStamp": timeStamp] as [String : Any]
         childRef.updateChildValues(values)
         print("Sended")
-        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         handleSend()
         self.view.endEditing(true)
         return true
-
     }
-    
 }
 
 

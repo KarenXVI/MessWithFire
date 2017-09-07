@@ -133,8 +133,6 @@ class LoginController: UIViewController {
         }
     }
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -171,7 +169,7 @@ class LoginController: UIViewController {
     var passwordTextFiledHeightAnchor: NSLayoutConstraint?
     
     func setupInputsContainerView() {
-        // Main container
+
         inputsContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         inputsContainerView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         inputsContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24).isActive = true
@@ -211,7 +209,6 @@ class LoginController: UIViewController {
         passwordTextField.widthAnchor.constraint(equalTo: inputsContainerView.widthAnchor).isActive = true
         passwordTextFiledHeightAnchor = passwordTextField.heightAnchor.constraint(equalTo: inputsContainerView.heightAnchor, multiplier: 1/3)
         passwordTextFiledHeightAnchor?.isActive = true
-        
     }
     
     func setupLoginRegisterButton() {
@@ -224,7 +221,6 @@ class LoginController: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-    
 }
 
 extension UIColor {

@@ -30,7 +30,6 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
             profileImageView.image = selectedImage
         }
         dismiss(animated: true, completion: nil)
-
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -68,7 +67,7 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
     }
     
     private func registerUserIntoDatabasewithUID(uid: String, values: [String : Any]) {
-        let ref = Database.database().reference(fromURL: "https://gameofchats-1oo16.firebaseio.com/")
+        let ref = Database.database().reference()
         let usersReference = ref.child("users").child(uid)
         usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
             if err != nil {
@@ -86,7 +85,4 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
             print("Saved user successfully into Firebase DB")
         })
     }
-    
-    
-    
 }

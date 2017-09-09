@@ -9,12 +9,43 @@
 import UIKit
 import Firebase
 
-class ChatLogController: UICollectionViewController, UITextFieldDelegate {
+class ChatLogController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout {
     
+    let cellId = "cellId"
     var user: UserType? {
         didSet {
             navigationItem.title = user?.name
+            observeMessages()
         }
+    }
+    var messages = [Message]()
+    
+    func observeMessages() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        let userMessagesRef = Database.database().reference().child("user-messages").child(uid)
+        userMessagesRef.observe(.childAdded, with: { (snapshot) in
+            let messageId = snapshot.key
+            let messagesRef = Database.database().reference().child("messages").child(messageId)
+            messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                guard let dictionary = snapshot.value as? [String: Any] else {
+                    return
+                }
+                let message = Message()
+//                message.setValuesForKeys(dictionary)
+                message.fromId = dictionary["fromId"] as? String
+                message.text = dictionary["text"] as? String
+                message.timeStamp = dictionary["timeStamp"] as? NSNumber
+                message.toId = dictionary["toId"] as? String
+                self.messages.append(message)
+                
+                DispatchQueue.main.async {
+                    self.collectionView?.reloadData()
+                }
+            }, withCancel: nil)
+        }, withCancel: nil)
     }
     
     lazy var inputTextField: UITextField = {
@@ -28,7 +59,22 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView?.backgroundColor = .white
+        collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellId)
         setupInputComponents()
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return messages.count
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
+        cell.backgroundColor = .black
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width, height: 80)
     }
     
     func setupInputComponents() {
@@ -82,7 +128,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
 //        childRef.updateChildValues(values)
         childRef.updateChildValues(values) { (error, ref) in
             if error != nil {
-                print(error)
+                print(error ?? "Send Error in handleSend function")
                 return
             }
             let messageId = childRef.key

@@ -10,6 +10,7 @@
 		173CF7D87FCD87C6334C6E69 /* Pods_GameOfChats.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BCCA6C3ADA0ECE1EA52BEC9 /* Pods_GameOfChats.framework */; };
 		9C2785EC1F5C470700EBC4F0 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2785EB1F5C470700EBC4F0 /* Message.swift */; };
 		9C2785EF1F5D70F300EBC4F0 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2785EE1F5D70F300EBC4F0 /* UserCell.swift */; };
+		9C61F2301F641AD4008B38C0 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C61F22F1F641AD4008B38C0 /* ChatMessageCell.swift */; };
 		9CBA0DE81F57FB87000E1F25 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CBA0DE71F57FB87000E1F25 /* AppDelegate.swift */; };
 		9CBA0DEA1F57FB87000E1F25 /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CBA0DE91F57FB87000E1F25 /* MessagesController.swift */; };
 		9CBA0DED1F57FB87000E1F25 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9CBA0DEB1F57FB87000E1F25 /* Main.storyboard */; };
@@ -29,6 +30,7 @@
 		63FE522A2179BBB606B438C7 /* Pods-GameOfChats.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GameOfChats.release.xcconfig"; path = "Pods/Target Support Files/Pods-GameOfChats/Pods-GameOfChats.release.xcconfig"; sourceTree = "<group>"; };
 		9C2785EB1F5C470700EBC4F0 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		9C2785EE1F5D70F300EBC4F0 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
+		9C61F22F1F641AD4008B38C0 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		9CBA0DE41F57FB87000E1F25 /* GameOfChats.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameOfChats.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CBA0DE71F57FB87000E1F25 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CBA0DE91F57FB87000E1F25 /* MessagesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesController.swift; sourceTree = "<group>"; };
@@ -66,12 +68,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		9C2785ED1F5D70DA00EBC4F0 /* View */ = {
+		9C2785ED1F5D70DA00EBC4F0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				9C2785EE1F5D70F300EBC4F0 /* UserCell.swift */,
+				9C61F22F1F641AD4008B38C0 /* ChatMessageCell.swift */,
 			);
-			path = View;
+			path = Views;
 			sourceTree = "<group>";
 		};
 		9CBA0DDB1F57FB87000E1F25 = {
@@ -95,10 +98,10 @@
 		9CBA0DE61F57FB87000E1F25 /* GameOfChats */ = {
 			isa = PBXGroup;
 			children = (
-				9C2785ED1F5D70DA00EBC4F0 /* View */,
+				9C2785ED1F5D70DA00EBC4F0 /* Views */,
 				9CBA0E061F5AEE92000E1F25 /* Helpers */,
 				9CBA0E011F598976000E1F25 /* Models */,
-				9CBA0DF91F5807C3000E1F25 /* Controller */,
+				9CBA0DF91F5807C3000E1F25 /* Controllers */,
 				9CBA0DE71F57FB87000E1F25 /* AppDelegate.swift */,
 				9CBA0DEB1F57FB87000E1F25 /* Main.storyboard */,
 				9CBA0DEE1F57FB87000E1F25 /* Assets.xcassets */,
@@ -109,7 +112,7 @@
 			path = GameOfChats;
 			sourceTree = "<group>";
 		};
-		9CBA0DF91F5807C3000E1F25 /* Controller */ = {
+		9CBA0DF91F5807C3000E1F25 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				9CBA0DFA1F580817000E1F25 /* LoginController.swift */,
@@ -118,7 +121,7 @@
 				9CBA0E041F59BAFC000E1F25 /* LoginControllersHandlers.swift */,
 				9CBA0E091F5AFECB000E1F25 /* ChatLogController.swift */,
 			);
-			path = Controller;
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		9CBA0E011F598976000E1F25 /* Models */ = {
@@ -289,6 +292,7 @@
 				9CBA0DFB1F580817000E1F25 /* LoginController.swift in Sources */,
 				9CBA0E031F598996000E1F25 /* User.swift in Sources */,
 				9CBA0E051F59BAFC000E1F25 /* LoginControllersHandlers.swift in Sources */,
+				9C61F2301F641AD4008B38C0 /* ChatMessageCell.swift in Sources */,
 				9CBA0DE81F57FB87000E1F25 /* AppDelegate.swift in Sources */,
 				9C2785EF1F5D70F300EBC4F0 /* UserCell.swift in Sources */,
 				9CBA0E081F5AEEB1000E1F25 /* Extensions.swift in Sources */,

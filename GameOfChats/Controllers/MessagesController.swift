@@ -43,8 +43,8 @@ class MessagesController: UITableViewController {
                     messagen.timeStamp = dictionary["timeStamp"] as? NSNumber
                     messagen.toId = dictionary["toId"] as? String
                     
-                    if let toId = messagen.toId {
-                        self.messagesDictionary[toId] = messagen
+                    if let chatPartnerId = messagen.chatPartnerId() {
+                        self.messagesDictionary[chatPartnerId] = messagen
                         
                         self.messages = Array(self.messagesDictionary.values)
                         

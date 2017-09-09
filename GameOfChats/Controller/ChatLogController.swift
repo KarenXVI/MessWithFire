@@ -1,6 +1,6 @@
 //
 //  ChatLogController.swift
-//  GameOfChats
+//  MessWithFire
 //
 //  Created by Karen Tserunyan on 9/2/17.
 //  Copyright © 2017 Karen Tserunyan. All rights reserved.
@@ -79,7 +79,21 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
         let fromId = Auth.auth().currentUser!.uid
         let timeStamp = Date().timeIntervalSince1970 as NSNumber
         let values = ["text": inputTextField.text!, "toId": toId, "fromId": fromId, "timeStamp": timeStamp] as [String : Any]
-        childRef.updateChildValues(values)
+//        childRef.updateChildValues(values)
+        childRef.updateChildValues(values) { (error, ref) in
+            if error != nil {
+                print(error)
+                return
+            }
+            let messageId = childRef.key
+            
+            let userMessagesRef = Database.database().reference().child("user-messages").child(fromId)
+            userMessagesRef.updateChildValues([messageId: 1])
+            
+            let recipientUserMessagesRef = Database.database().reference().child("user-messages").child(toId)
+            recipientUserMessagesRef.updateChildValues([messageId : 1])
+        }
+        
         print("Sended")
     }
     

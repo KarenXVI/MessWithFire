@@ -1,6 +1,6 @@
 //
 //  LoginController.swift
-//  GameOfChats
+//  MessWithFire
 //
 //  Created by Karen Tserunyan on 8/31/17.
 //  Copyright © 2017 Karen Tserunyan. All rights reserved.

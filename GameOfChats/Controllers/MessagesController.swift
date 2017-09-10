@@ -14,6 +14,8 @@ class MessagesController: UITableViewController {
     let cellId = "cellId"
     var messages = [Message]()
     var messagesDictionary = [String: Message]()
+    var timer: Timer?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -21,12 +23,16 @@ class MessagesController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(handleNewMessage))
         
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
-        
+        tableView.isUserInteractionEnabled = true
         checkIfUserIsLoggedIn()
-//        observeMessages()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        tableView.isUserInteractionEnabled = true
     }
     
     func observeUserMessages() {
+        
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
@@ -52,52 +58,35 @@ class MessagesController: UITableViewController {
                         //                        return message1.timeStamp?.intValue > message2.timeStamp?.intValue
                         //                    })
                     }
-                    
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                    }
+                    self.timer?.invalidate()
+                    print("Cancel timer")
+                    self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
+                    print("reload table after in 0.1 sec")
                 }
             }, withCancel: nil)
         }, withCancel: nil)
 
     }
     
-//    func observeMessages() {
-//        let ref = Database.database().reference().child("messages")
-//        ref.observe(.childAdded, with: { (snapshot) in
-//
-//            if let dictionary = snapshot.value as? [String: Any] {
-//                let messagen = Message()
-//                messagen.fromId = dictionary["fromId"] as? String
-//                messagen.text = dictionary["text"] as? String
-//                messagen.timeStamp = dictionary["timeStamp"] as? NSNumber
-//                messagen.toId = dictionary["toId"] as? String
-//
-//                if let toId = messagen.toId {
-//                    self.messagesDictionary[toId] = messagen
-//
-//                    self.messages = Array(self.messagesDictionary.values)
-//
-////                    self.messages.sort(by: { (message1, message2) -> Bool in
-////                        return message1.timeStamp?.intValue > message2.timeStamp?.intValue
-////                    })
-//                }
-//
-//                DispatchQueue.main.async {
-//                    self.tableView.reloadData()
-//                }
-//            }
-//        }, withCancel: nil)
-//    }
+    @objc func handleReloadTable() {
+        DispatchQueue.main.async(execute: {
+            print("Reload Table")
+            self.tableView.reloadData()
+        })
+    }
+
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count
     }
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 72
     }
     
-    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.isUserInteractionEnabled = false
         
         let message = messages[indexPath.row]
         guard let chatPartnerId = message.chatPartnerId() else {
@@ -116,9 +105,8 @@ class MessagesController: UITableViewController {
             user.email = dictioanry["email"] as? String
             user.profileImageUrl = dictioanry["profileImageUrl"] as? String
             self.showChatControllerForUser(user: user)
-
+            
         }, withCancel: nil)
-        
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -170,7 +158,6 @@ class MessagesController: UITableViewController {
         
         observeUserMessages()
 
-        
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
 
@@ -206,7 +193,6 @@ class MessagesController: UITableViewController {
         nameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor).isActive = true
         
         self.navigationItem.titleView = titleView
-//        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
     }
     
     @objc func showChatControllerForUser(user: UserType) {
@@ -216,13 +202,11 @@ class MessagesController: UITableViewController {
     }
     
     @objc func handleLogout() {
-        
         do {
             try Auth.auth().signOut()
         } catch let logoutError {
             print(logoutError)
         }
-        
         let loginController = LoginController()
         loginController.messagesController = self
         present(loginController, animated: true, completion: nil)
